@@ -1,0 +1,102 @@
+
+git 是一个版本控制系统
+
+1, git 安装和配置
+   ① git 需要安装，进入git官网可以找到下载地址，git支持 Linux、windows、苹果的Mac os X;
+   ② git 安装时不需要太多设置，下一步安装即可；
+
+2  git的使用可以使命令行 gitbash；
+   可视化窗口 sourceTree; 类似于 mysql
+	
+3  安装后需要进行配置，配置用户名和邮箱
+   (1) git 安装完成后配置用户名和邮箱
+	用户名：git config --global user.name "设定的用户名"；
+	邮箱号：git config --global user.email "绑定的邮箱"；
+
+   (2) 查看设置情况
+	git config --list
+
+4  git 仓库
+   git 仓库是git用于管理项目、存储项目的位置，git仓库分为本地仓库和远程仓库。
+   本地仓库在本地主机；远程仓库在服务器或者远程电脑上；
+
+   ① pwd 	：显示git当前所处的文件地址（当前能操作的文件）
+   ② ll  	：列出当前文件的夹下的所有文件信息
+   ③ ls  	: 列出当前文件夹下的所有文件的名字，不再是文件的向信息
+   ③ ls -a	: 作用和ls相同，唯一的区别是会显示当前文件夹所处的全部路径；
+		  它的另一个作用是显示所有的文件，比如 .开头的文件（如.git）属于隐藏文件
+		  隐藏文件用ls 是不显示的，但是 ls -a 会显示
+   ④ cd .. 	: 可以进入当前文件夹所处的上一级文件夹
+   ⑤ cd 子文件夹名：进入相应的子文件夹
+   ⑥ mkdir 文件名：在当前文件夹下新建一个文件夹；
+
+   ⑦ git init 	：会初始化一个新的数据仓库（本地仓库）仓库的地址正是.git 所处的的文件夹
+   ⑧ echo "数据内容" >> test.txt 	// 将 数据内容 保存到 test.txt(test不存在会新建test)
+      echo "新的内容" >> test.txt	// 将 新的内容 保存到 test.txt, 在原有基础上继续添加
+      cat test.txt			// 输出 test 中的数据
+   
+   ⑨ git add test.txt			// 将test 文件添加到本地仓库
+   ⑩ git commit -m "描述信息"		// 将test添加到本地仓库，描述信息为记录本次添加数据的说明
+   11)git status			// 查看当前的状态信息，会描述当前所处的git分支，
+					// 如果有文件已经 git 但是没有commit 则会显示等待commit 的文件的信息，否则不显示数据
+					// 因此 git status 可以查看已经add，但是未commit的文件
+
+5 git远程仓库
+  git 本地和远程仓库是通过 SSH 加密传输的，因此首先需要建立SSH key
+
+5.1 本地和远程建立SSH key 的方法如下：
+    输入命令 "ssh-keygen -t rsa -C "注册git的邮箱" "
+    在git 目录下有一个 id_rsa.pub的内容 copy 到 gitHub 中的ssk 中
+
+    补充： cd ~ 是进入到用户目录，一般在该目录下的子路径下会存在一个 id_rsa.pub的文件，将该文件的内容复制到gitHub的页面SSH KEY 中会完成本地到远程仓库的链接，
+    此时，将本地的文件push 到远程仓库即可； // 所有的文件都是从本地仓库push 上去的；添加到本地仓库需要经过 add 和 commit 两步才可以！
+5.2 验证ssh 是否已经生效
+    ssh -T git@gitHub.com
+5.3 将本地仓库添加到远程仓库
+    先将文件保存到本地仓库，然后将本地仓库和远程仓库关联起来，这样就可以将本地文件添加到远程仓库中
+
+本地代码推到远程gitlab步骤如下：
+首先，需要本地建立仓库，本地仓库在最外层项目；需要完成仓库的生成（git init）、临时仓库（git add 文件名）、git commit "说明文件"，保证文件已被本地仓库管理；
+其次，本地仓库需要和远程仓库建立连接关系，通过 "ssh-keygen -t rsa -C "注册git的邮箱" 生成sshKey;
+      将新生成 sshkey 保存到gitlab的setting sshkey 中，获取生成的密匙如 71:f0:43:d2:as:ad:fs ...
+      通过git remote add origin "上一步密匙"	// 建立连接成功 （可通过 git -T 远程仓库的HTTP地址查看连接状态）
+      git push -u origin master 推到 远程仓库的master 分支
+         
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+================= JGit =============================
+
+1, JGit 是 eclipse 开发的工具；
+
+2，clone project
+
+public static void main(String[] args) throws GitAPIException {
+    Git git = Git.cloneRepository().setURI("xxx.git")
+            .setCredentialsProvider(provide())
+            .call();
+    git.checkout()
+            .setCreateBranch(true)
+            .setName("your-branch")
+            .call();
+    File file = git.getRepository().getDirectory();
+    String projectPath = file.getParent();
+}
+
+private static UsernamePasswordCredentialsProvider provide() {
+    return new UsernamePasswordCredentialsProvider(username, password);
+}
