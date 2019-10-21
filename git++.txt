@@ -167,6 +167,9 @@
 		 补充说明：
 			git remote add origin git@gitHub.com:xyp-China/learngit.git 	// 该方式首选，上传数据不需要用户名和密码
 			git remote add origin https://github.com/xyp-China/learn_git 	// 该方式磁选，上传书序需要用户名和密码
+			
+			git remote -v 可以查看仓库的链接信息；
+			git remote rm origin 可以移除链接信息；
 
   (2) 和远程仓库的交互
       ① 向远程仓库推送文件，
