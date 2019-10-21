@@ -1,0 +1,301 @@
+1 Git简介
+  (1) git是由Linux之父Linus使用C编写的分布式版本控制系统，它比以SVN为代表的集中式版本控制系统有很大的优势；
+      知识延伸：
+		git采用分布式系统，每一个主机都包含完整的数据文件，因此每个节点机的开发都不受网络环境的影响，而集中式则受到网络环境的影响，一旦断网，没法下载和保存；（集中式的节点机和中央服务器类似于单机的显示器和主机之间的关系，仅仅是类似）
+		在git中为了方便数据的交换，设置了”远程交互控制器"（实际为保存一个副本，目的仅用于交互）
+  
+  (2) git的安装和配置
+	  git 是一个分布式..系统（是一个管理软件），因此在使用Git 前需要先安装这个管理软件，git下载地址为Git官网，git支持Linux、windows、mac等多种系统；
+	  git 下载安装后，需要进行一定的配置，主要是配置用户名和邮箱号
+			git config --global user.name "tom"
+			git config --global user.mail "tom@qq.com"
+
+  (3) 打开git客户端
+	  在windows下 git 安装后要打开git有两种方式：
+	  ① 在右下角搜索框输入git/git bash 选择git bash 打卡，此时打开的默认工作目录是根目录；
+	  ② 选择需要打卡的工作目录，然后右击选择"git bash here", 此时的工作目录为当前目录；
+	  说明：在windows下文件的地址中不要包含中文，因此可能引起一些意想不到的麻烦
+	  
+  (4) 版本库 repository
+      在git中每一个管理单位叫做版本库，用repository表示，版本库不是用来追踪和管理文件的，而是追踪和管理文件的每一次修改（即commit），git 跟踪和完善的是修改而不是文件本身
+	  
+	  例 有一个版本库rep, 需要版本库管理一批文件，则
+			首先，进入rep；
+			其次，git init 在rep中建立 .git 文件（记录文件的修改中心）；
+			第三，将要管理的文件入 rep 目录下；
+			第四，git add 文件f，	// 文件放入git 缓存区，多次 git add 可以将多个文件放入缓存区, 如 git add f1; git add f2,f3;
+			第五，git commit -m "文件描述"	// 将缓存区的文件全部提交到git管理，commit的含义是提交，此时文件放入git中进行管理
+			
+		补充命令：git add --all 将当前仓库中所有发生变化的文件统一提交到暂存区中；
+			
+2 Git 操作
+  (1) 新建git仓库
+		要管理某个文件f，就在文件f中初始化一个名称为 .git 的仓库（git init命令），该仓库会管理f下所有的文件（由.git 记录f下所有文件的变更信息）
+		说明：① git 只能跟踪文本文件的详细变化（能列出哪里发生了变化），但对于图片、视频、word等二进制文件的变化无法跟踪修改的细节，只能显示当前的状态（无法对比）
+			  ② 在windows下，编辑txt文件最好使用 notepad++，同时将文件的编码设置为utf-8 without Bom (notepad++ "设置" --> "首选项" --> "新建")
+			
+  (1.1)	git init 补充
+	  创建一个目录（根目录），如果要让该目录作为本地管理的一个仓库，需要：
+		① 进入该目录；
+		② 在目录下使用git init 命令；
+		核心：git init 只完成一件事就是 "在根目录下创建一个 .git 的文件夹", 用来保存版本信息（每次 commit 就是一个版本）;
+		
+			
+  (2) git commit -m 命令
+		每次提交一个文件到git仓库管理，.git 都会新建这个文件的副本，以便保存，每一次commit都会生成一个 commit id, 格式为大串字符串，为避免分布式系统中的冲突
+		-m 后面跟随的是对这次提交的说明
+	  
+  (3) git log / git reflog
+	  可以查看历史commit 的详细记录
+	  
+	  git log --pretty=oneline	// 输出简要记录
+	  
+	git log 补充内容：
+			$ git log
+			commit 48af5223bc4f7be37af058f2af3a4bc5e2d0b44f (HEAD, master)		// 第一条信息是 HRAD 指向 master 分支
+			Author: xyp <jnjyxyp@sina.com>
+				Date:   Mon Oct 21 09:10:26 2019 +0800
+
+					two new file file2 and file3
+
+			commit d1192e19ecb4e672d8a96d2092ff71ade55e6bec				// 第二条信息是master分支的当前 commit 版本
+			Author: xyp <jnjyxyp@sina.com>
+			Date:   Mon Oct 21 08:56:08 2019 +0800
+
+				v 2.0
+
+			commit 5ccd965022395c58cb0de2ba786f70b973fdcd06				// HRAD^ 或 HEAD~1 对应的commit 版本
+			Author: xyp <jnjyxyp@sina.com>
+			Date:   Mon Oct 21 08:53:43 2019 +0800
+
+				1.0 version
+
+	
+	  
+  (4) 版本回退
+	  (1) HEAD 指向当前版本，HEAD^/HEAD~1 指向上一个版本，HEAD^^/HEAD~2, HEAD^^^^^^^^^^/HEAD~10
+	  
+		* git reset --hard HEAD^^	// 回退到HEAD^^版本，此时的HEAD^^版本为HEAD, HEAD^^^版本为HEAD^, 原先的 HEAD和HEAD^ 消失，
+			剖析：每一次版本替换都是将 .git 中保存的历史版本重装到当前的文件下	// .git 记录了当前文件的所有历史修改副本
+	  
+		补充内容：
+			HEAD 总是指向当前分支的最新版本，最新指的是与操作相关的最近一次的版本，还是两种表示版本的方式；
+			HEAD^^^ 和 HEAD~3是一样的；
+		
+	  (2) 在 * 的基础上，如果想回退到原始的版本或者原始的 HEAD^ 版本该如何处理呢？
+		  ① git reflog 查询历史记录，找到相应commit 对应的commit id (cid)
+		  ② git reset --hard cid
+		  
+		 说明：HEAD 永远指向当前的版本，版本的回退与前进只涉及HEAD指针的修改
+			   回退：git reset --hard HEAD~x
+			   返回：git log / git reflog
+					 git reset --hard commit id
+					 
+		补充内容：
+			① 通过git log 或者 git reflog 可以查看所有commit 的历史id;
+			② git show commitId（前几位即可，下同） 可以查看对应 commitId 的数据内容，但是不会引起工作区版本信息的变更；
+			③ git checkout commitId 会完成版本的切换，将相应版本的数据切换到工作区，与版本的回退或者前进类似；
+			④ git reset commitId 功能与③相同；
+					 
+  (5) git 中的分区
+	  工作区、暂存区stage（git add 之后的区域）、管理区（commit之后的区域）、隐藏区（git stash之后的区域）
+	  index 指向暂存区，HEAD指向工作区所对应的版本
+	  
+	  工作区域补充：
+		工作区、暂存区、正式版本历史库
+		工作区：用户一直编辑的或者对用户课件的文件区；
+		暂存区：用户通过 add 命令将数据从工作区保存到暂存区，可以一次保存多个文件，或者连续保存多次文件；
+		正式版本库：用户使用commit将暂存区的数据一次提交到版本库，说明，每次commit都是将版本库中的所有数据一起提交到版本库；
+	  
+  (6) git status 可以查看工作区的状态
+	  修改工作区文件、add之后未提交 git status都会有提示，显示与.git 管理的最新版本不一致
+	  
+	  显示工作区文件和 .git 中最新版本的文件的区别，使用命令 git diff HEAD -- 文件名
+	  
+  (7) git 的三级撤销，修改后通过git status查看
+	  
+	  ① 工作区做了修改，但是未add
+		 方法一：手动文件删除，删除到原始的状态；
+		 方法二：git checkout -- 文件名
+		 
+	  ② 工作区已经修改，且已经add，但未commit
+		 git reset HEAD 文件名
+		 git checkout -- 文件名
+		 
+	  ③ 工作区已经修改，add 和 commit
+	     git reset HEAD^
+		 git checkout -- 文件名
+		 
+	     说明：git reset HEAD^只是将git最新版本放到.git 文件中，而需要git checkout -- 文件名才需要将文件内容保存到工作目录中
+			   猜测：在②③中如果仅仅是本地不需要 git checkout -- 文件名 语句，而如果已经有远程库则需要git checkout -- 文件名语句
+		 
+	  ④ 工作区修改，add commit 和push
+	  
+  (8) 删除文件
+	  ① 本地删除
+		 git rm fileName	// 删除文件名为fileName的文件，仅仅本地删除；此时工作区和版本库中的内容不一致，可以使用git status 查看！
+		 git commit -m "本次删除操作的描述信息"		// 此时从版本库中删除文件
+		
+		 以上操作室一个完整的删除操作
+		 
+      ② 回复文件，如果只从本地工作区删除了文件，但是没有从版本库中删除文件，此时可以回复文件本地工作区文件，回复操作命令是：
+		 git checkout -- fileName 	// 将刚删除的文件从本地回复
+		 
+		 回复文件时遇到如下错误
+		 $ git checkout -- file
+		 error: pathspec 'file' did not match any file(s) known to git
+		 
+		 原因解释：
+			git rm file名字 后通过 git checkout -- file名字 无法恢复 file
+			但是直接从文件夹中手动删除文件后，通过 git checkout -- file名字 可以恢复文件
+			
+3 远程仓库
+  (1) 要将本地的文件和远程的文件对接，需要经过两步链接：
+      ① 主机级别的链接，过程是本地生成 SSHKEY 和 远程服务器的链接；
+		 细节如下：
+			本地生成SSHKEY SSH-keygen -t rsa -C "注册邮箱"
+			连续回车，在计算机用户文件夹下生成两面秘钥 id_rsa(私钥) 和 id_rsa.pub(公钥)；
+			将公钥内容复制到 gitHub 的setting --> SSH 和 GPG keys --> now SSH key 中，由此建立了主机间的链接，以后这个主机上的所有仓库都可以和gitHub上的仓库对接通信；
+			
+		 查看链接状态：
+			SSH -T git@gitHub 查看是否链接成功
+	
+	  ② 仓库间的链接
+	     本地仓库和远程某个仓库间的链接
+		 git remote add origin gitHub中某个仓库的地址，如git remote add origin git@gitHub.com:xyp-China/learngit.git 		// 完成以上仓库和远程具体某个仓库的对接
+		 
+		 补充说明：
+			git remote add origin git@gitHub.com:xyp-China/learngit.git 	// 该方式首选，上传数据不需要用户名和密码
+			git remote add origin https://github.com/xyp-China/learn_git 	// 该方式磁选，上传书序需要用户名和密码
+
+  (2) 和远程仓库的交互
+      ① 向远程仓库推送文件，
+	     保存在本地仓库的文件可以推到远程仓库中
+		 git push -u origin master
+		 
+  (3) 从远程仓库获取项目到本地某个文件中，
+	  ① 前提条件：
+	     本地主机已经和远程服务器建立了主机级别的链接，如果没有建立链接，需要创建SSHKEY 建立主机间链接
+		 
+	  ② 拉代码
+	     git init  // 建立本地仓库
+	     git clone 远程仓库地址  如 git clone git@gitHub.com:xyp-China/learngit.git		// 拉代码
+		 
+	  备注：对于gitHub而言，拉代码的地址有两类，一类是 git@gitHub.com:xyp-China/learngit.git 这类git地址，一类是Https 这类地址，其中https 速度慢，每次都要口令！
+		 
+4 分支管理
+  (1) 分支概述
+      分支是一段版本流，其中指针master一直指向主分支的最新版本，如果另建一个分支Dev 则Dev 指向新建分支的最新版本；
+	  head是指向当前活动分支，如果是处于主分支，则head指向master，如果是Dev分支，则head指向dev
+	  
+	  分支的出现是为了让开发更加的灵活、方便，尤其在多人开发的过程中
+        
+  (2) 何时使用分支
+	  人员开发项目不能再master分支上开发，因为master分支用于保存当前的稳定版本，master分支与远程交互只涉及新版本的变更；
+	  开发时需要新建一个分支，（新建的分支的初始内容是创建分支上的副本）；
+	  在新分支上开发项目，然后add、commit；
+	  开发完成后切换到原始分支，原始分支合并新分支；
+	  
+  (3) 创建分支并切换分支
+      方式一：① git branch dev		// 创建dev分支，仍然处于master分支
+	          ② git checkout dev   // 切换到 dev 分支
+			  
+	  方式二：git checkout -b dev   // 创建并切换到 dev 分支
+	  
+	  创建分之后，切换到新的分支，此时会创建一个新的工作区文件，可以认为 dev 是master的子分支，如果在 dev 上创建一个新的分支devv, 则devv 是dev 的子分支 ===》 新分支是当前创建分支的子分支，同时新分支的初始文件也是父分支的当前文件内容。
+	  
+  (3) 查看分支列表和当前活动分支
+      git branch 	// 显示仓库分支列表，并且在当前活动分支前有一个 * 
+	  
+  (4) 分支内容的合并
+	  ① 切换到新分支后，对分支内容进行操作，操作完成后需要 add、commit 等操作；
+	  ② 通过 git checkout 命令切换回原始分支；
+	  ③ git merge dev 命令 将dev分支修改的内容合并到当前的分支上
+	  ④ 合并完成后，使用 git branch -d dev 删除dev分支
+	  
+	  合并方式：
+		分支的合并方式有多种，默认为快速合并，如以上 git merge dev 就是使用的快速合并；
+		
+	  分支冲突：
+	    如果父分支没有发生改变，则子分支直接合并一般不会有多少冲突；
+		如果在子分支开发的过程中，父分支也在变化（如团队开发中，别人有合并到主分支的操作），此时使用快速合并已经不合适；
+		
+		产生冲突后使用 git status查看冲突原因，同时工作目录中的文件内容中已经使用 <<<<<< ===== >>>>>> 标记处具体的冲突内容，
+		需要手动从文件中修改需要保留的内容，然后再 add commit 等操作；
+		
+	  查看分支的合并情况：git log --graph --pretty=oneline --abbrev-commit
+	  
+	  === 分支合并成功后不需要 add 和commit ===
+	  
+  (5) 分支管理策略
+      ① master 分支不用于开发，只用于合并dev分支从而完成版本的更替；
+		 dev 分支是开发的主分支，如果是团队开发，需要在dev上开发几个子分支，每个子分支不断将开发的内容合并到dev 分支上；
+	  
+	  ② 合并分为 快速合并：在操作日志中不能查看到合并的记录；
+				  普通合并：在历史记录中可以查看到合并的记录；
+
+  (6) 如在dev 分支上正开发项目，还未开发完成，此时需要在master分支上修改一个bug, 此时的操作如下：
+      ① 先用 git stash 命令将dev分支上的内容保存到隐藏区；	// 此时 git status 可以看到 git tree is clean；
+	  ② git checkout master 切换回master分支；
+	  ③ git checkout -b bug 新建bug 分支，由于是在master分支上修改的，因此bug 分支的初始文件与master分支相同；
+	  ④ 完成修改操作，add, commit 命令；
+	  ⑤ git checkout master 切换回master分支；
+	  ⑥ git merge bug 将bug分支合并到master分支；
+	  ⑦ git branch -d bug 删除bug 分支；
+	  ⑧ git checkout dev 切换回dev 分支；
+	  ⑨ 先将 master分支的内容与dev 隐藏后的内容合并（隐藏后自动回复到初始开发时）
+		 git log --graph --pretty=oneline --abbrev-commit 查看合并历史记录，将master分支合并bug 分支后的commit id (设为cid)查询出来；
+         git cherry-pick cid 完成 master分支替换 dev 当前内容
+      a) 释放隐藏区内容
+		 ① git stash list 查看隐藏区内容列表；
+		 ② git stash pop 将隐藏区内容恢复到dev分支上；
+	  b) 回复隐藏区内容有两种方法：
+	     方法1：① git stash apply		// 将隐藏区内容自动合并到dev 上；② git stash drop 删除隐藏区的内容；
+		 方法2：git stash pop  即恢复隐藏区内容，又将stash中的内容删除掉；
+		 
+  (7) 分支的删除
+	  分支删除必须返回父分支才可以执行删除操作, 删除语句为 git branch -d 分支名；
+      如果分支的内容作了修改，并没有 add 或者没有commit，则使用以上分支删除时会出现拒绝删除的情况，此时可以使用强制删除语句：
+	  git branch -D 分支名；
+	  
+  (8) 常用分支
+	  master 主分支；
+	  dev 开发分支；
+	  bug 修复bug时的分支；
+	  feature 开发新功能的分支，如果有多个新功能可以使 feature1,feature2... 或者 feature_stastics, feature_email等
+	  
+	  
+  其他说明：
+		① 如果文件或者分支的名字包含空格，可以使用"" 将名称包含起来，例如有文件名 test file, 显示文件内容可以使用 cat "test file";
+		② 新建文件夹
+		   mkdir 新文件夹名；
+		③ 新建文件
+		   touch file.txt;
+		   
+		   echo "new file" >> file.txt	// 将文件信息写入 file.txt 文件中，如果file.txt 存在，则先换行再填充 new file 信息；如果 file.txt 文件不存在，则新建 file.txt，然后写入数据；
+		④ 进入上一级目录 cd ..
+		
+		   
+   
+	  
+	  
+	  
+	
+	  
+		 
+		 
+		  
+		  
+		  
+		  
+		  
+		  
+		  
+		  
+		  
+		  
+		  
+		  
+		  
+		  
+		  
